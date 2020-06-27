@@ -98,12 +98,19 @@ for device in devices:
             continue
     continue
 
-def gen_yaml(sensor):
-    yaml = {}
-    yaml['platform'] = 'xiaomi_lywsd03mmc'
-    yaml['mac_address']
+def gen_yaml(sensors):
+    myYaml = {'sensor':[]}
+    for sensor in sensors:
+        data = {}
+        data['platform'] = 'xiaomi_lywsd03mmc'
+        data['mac_address'] = sensor['mac_address']
+        data['bindkey'] = sensor['bindkey']
+        data['temperature']['name'] = f"{sensor['name']} Temperature"
+        data['humidity']['name'] = f"{sensor['name']} Humidity"
+        data['battery_level']['name'] = f"{sensor['name']} Battery Level"
+        myYaml['sensors'].append(data)
+    return yaml.dump(myYaml)
 
-sensorsYaml = []
 for sensor in final:
     print(f"Found sensor with name \"{sensor['name']}\"")
     a = input("Do you want to change this name? [y/N]\n")
@@ -112,6 +119,9 @@ for sensor in final:
             name = input("What do you want to call this sensor?\n")
             sure = input(f"Are you sure you want to rename {sensor['name']} to {name}? [Y/n]\n")
             if sure.lower().strip() in ['','y']: # rename and end loop
+                name = name.capitalize() # assert capitalisation
                 print(f"Renamed {sensor['name']} to {name}")
+                sensor['name'] = name
                 break
-    gen_yaml(sensor)
+
+gen_yaml(final)
