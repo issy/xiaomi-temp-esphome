@@ -2,13 +2,15 @@
 import re
 import os.path
 from os import path
-
+import sys
 try:
-    import yaml
+    import ruamel.yaml
 except ModuleNotFoundError:
-    print("Please install pyyaml using pip")
+    print("Please install ruamel.yaml using pip")
     print("Exiting...")
     exit()
+
+yaml = ruamel.yaml.YAML()
 
 for f in ['devices.txt','pairings.txt']:
     if path.exists(f) == False:
@@ -116,19 +118,19 @@ def gen_yaml(sensors):
     for sensor in sensors:
         data = {}
         data['platform'] = 'xiaomi_lywsd03mmc'
-        data['mac_address'] = sensor['mac_address']
-        data['bindkey'] = sensor['bindkey']
+        data['mac_address'] = ruamel.yaml.scalarstring.DoubleQuotedScalarString(sensor['mac_address'])
+        data['bindkey'] = ruamel.yaml.scalarstring.DoubleQuotedScalarString(sensor['bindkey'])
         data['temperature'] = {}
-        data['temperature']['name'] = f"{sensor['name']} Temperature"
+        data['temperature']['name'] = ruamel.yaml.scalarstring.DoubleQuotedScalarString(f"{sensor['name']} Temperature")
         data['humidity'] = {}
-        data['humidity']['name'] = f"{sensor['name']} Humidity"
+        data['humidity']['name'] = ruamel.yaml.scalarstring.DoubleQuotedScalarString(f"{sensor['name']} Humidity")
         data['battery_level'] = {}
-        data['battery_level']['name'] = f"{sensor['name']} Battery Level"
+        data['battery_level']['name'] = ruamel.yaml.scalarstring.DoubleQuotedScalarString(f"{sensor['name']} Battery Level")
         myYaml['sensor'].append(data)
     return myYaml
 
 newYaml = gen_yaml(final)
-print(yaml.dump(newYaml))
+yaml.dump(newYaml,sys.stdout)
 print(f"YAML generation complete!")
 filename = input("What would you like to call this file?\n")
 if path.exists(filename) == True:
