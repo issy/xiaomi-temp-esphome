@@ -105,10 +105,13 @@ def gen_yaml(sensors):
         data['platform'] = 'xiaomi_lywsd03mmc'
         data['mac_address'] = sensor['mac_address']
         data['bindkey'] = sensor['bindkey']
+        data['temperature'] = {}
         data['temperature']['name'] = f"{sensor['name']} Temperature"
+        data['humidity'] = {}
         data['humidity']['name'] = f"{sensor['name']} Humidity"
+        data['battery_level'] = {}
         data['battery_level']['name'] = f"{sensor['name']} Battery Level"
-        myYaml['sensors'].append(data)
+        myYaml['sensor'].append(data)
     return yaml.dump(myYaml)
 
 for sensor in final:
@@ -124,4 +127,4 @@ for sensor in final:
                 sensor['name'] = name
                 break
 
-gen_yaml(final)
+print(gen_yaml(final))
