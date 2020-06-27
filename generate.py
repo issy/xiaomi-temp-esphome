@@ -98,6 +98,19 @@ for device in devices:
             continue
     continue
 
+for sensor in final:
+    print(f"Found sensor with name \"{sensor['name']}\"")
+    a = input("Do you want to change this name? [y/N]\n")
+    if a.lower().strip() == 'y': # if change name
+        while True:
+            name = input("What do you want to call this sensor?\n")
+            sure = input(f"Are you sure you want to rename {sensor['name']} to {name}? [Y/n]\n")
+            if sure.lower().strip() in ['','y']: # rename and end loop
+                name = name.capitalize() # assert capitalisation
+                print(f"Renamed {sensor['name']} to {name}")
+                sensor['name'] = name
+                break
+
 def gen_yaml(sensors):
     myYaml = {'sensor':[]}
     for sensor in sensors:
@@ -112,19 +125,30 @@ def gen_yaml(sensors):
         data['battery_level'] = {}
         data['battery_level']['name'] = f"{sensor['name']} Battery Level"
         myYaml['sensor'].append(data)
-    return yaml.dump(myYaml)
+    return myYaml
 
-for sensor in final:
-    print(f"Found sensor with name \"{sensor['name']}\"")
-    a = input("Do you want to change this name? [y/N]\n")
-    if a.lower().strip() == 'y': # if change name
-        while True:
-            name = input("What do you want to call this sensor?\n")
-            sure = input(f"Are you sure you want to rename {sensor['name']} to {name}? [Y/n]\n")
-            if sure.lower().strip() in ['','y']: # rename and end loop
-                name = name.capitalize() # assert capitalisation
-                print(f"Renamed {sensor['name']} to {name}")
-                sensor['name'] = name
+newYaml = gen_yaml(final)
+print(yaml.dump(newYaml))
+print(f"YAML generation complete!")
+filename = input("What would you like to call this file?\n")
+if path.exists(filename) == True:
+    while True:
+        
+            replace = input(f"This file already exists, would you like to replace it? [y/N]\n")
+            if replace.lower().split() == 'y':
                 break
+            elif replace.lower().split() not in ['y','n','']:
+                print("Invalid option, please confirm again")
+                continue
+            elif replace.lower().split() in ['','n']:
+                continue
+if filename.endswith(('.yaml','.yml')) == False:
+    filename = f"{filename}.yaml"
+try:
+    with open(filename,'w') as f:
+        exitFile = yaml.dump(newYaml,f)
+    print("File saved successfully")
+except Exception as err:
+    print(err)
+exit()
 
-print(gen_yaml(final))
